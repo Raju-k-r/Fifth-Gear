@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/layout"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_photo"
+            android:layout_width="40sp"
+            android:layout_height="40dp"
+            android:padding="4sp"
+            android:src="@drawable/person"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="2dp"
+            android:layout_marginHorizontal="8sp"/>
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center|start"
+            android:paddingStart="10sp"
+            android:textSize="20sp"
+            android:layout_weight="1"
+            android:textColor="@color/colorAccent"
+            android:text="@string/user_name"
+            tools:ignore="RtlSymmetry" />
+
+        <View
+            android:id="@+id/active_or_inactive"
+            android:layout_width="16sp"
+            android:layout_height="16sp"
+            android:padding="16sp"
+            android:layout_marginEnd="25sp"
+            android:layout_gravity="center|end"
+            android:background="@drawable/active_background_layout"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2sp"
+        android:layout_marginStart="40sp"
+        android:layout_marginEnd="10sp"
+        android:layout_marginHorizontal="4sp"
+        android:background="#A69E9E"
+        tools:ignore="SmallSp" />
+</LinearLayout>

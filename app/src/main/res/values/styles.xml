@@ -1,0 +1,31 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <!-- Flash Screen Theme -->
+    <style name="FlashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#D60831</item>
+        <item name="colorPrimaryDark">#AE1C1C</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <!-- Navigation View Theme -->
+    <style name="NavigationTheme">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:padding">4sp</item>
+    </style>
+
+    <style name="TextColorPrimary" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
+</resources>

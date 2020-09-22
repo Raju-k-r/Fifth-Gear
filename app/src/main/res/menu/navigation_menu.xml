@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_new_user"
+        android:title="@string/add_new_user"
+        android:icon="@drawable/add_user"/>
+
+
+    <item
+        android:id="@+id/view_users"
+        android:title="@string/view_users"
+        android:icon="@drawable/group_of_people_logo"/>
+
+    <item
+        android:id="@+id/statistic"
+        android:title="@string/statistic"
+        android:icon="@drawable/statistic_icon"/>
+
+    <item
+        android:id="@+id/due_amount"
+        android:title="@string/due_amounts"
+        android:icon="@drawable/due_amount_icon"/>
+
+    <item
+        android:id="@+id/edit_fees"
+        android:title="@string/edit_fees"
+        android:icon="@drawable/fees_logo"/>
+
+</menu>

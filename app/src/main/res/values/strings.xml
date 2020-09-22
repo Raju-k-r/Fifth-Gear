@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">Fifth Gear</string>
+    <string name="new_user_registration">Registration</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="age">Age</string>
+    <string name="gender">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="height">Height (inches)</string>
+    <string name="weight">Weight (kg)</string>
+    <string name="address">Address</string>
+    <string name="mobile">Mobile</string>
+    <string name="email">Email</string>
+    <string name="user_image">User Image</string>
+    <string name="plan">Plan</string>
+    <string name="fees">Fees</string>
+    <string name="register">Register</string>
+    <string name="logo">Logo</string>
+    <string name="plans">SAMPLE</string>
+    <string name="occupation">Occupation</string>
+    <string name="add_new_user">Add New User</string>
+    <string name="last_transactions">Last Transactions</string>
+    <string name="expiring_soon">Expiring Soon</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="close_drawer">Clode Drawer</string>
+    <string name="search">Search</string>
+    <string name="user_id">User Id</string>
+    <string name="zero">0.00</string>
+    <string name="health_issue">Health Issue</string>
+    <string name="due_amount">Due Amount</string>
+    <string name="due_date">Due Date</string>
+    <string name="date">0000-00-00</string>
+    <string name="monthly">Monthly</string>
+    <string name="annual">Annual</string>
+    <string name="half_yearly">Half yearly</string>
+    <string name="quarterly">Quarterly</string>
+    <string name="view_users">View Users</string>
+    <string name="edit_fees">Edit Fees</string>
+    <string name="add_payment">Add Payment</string>
+    <string name="last_few_transactions">Last Few Transactions</string>
+    <string name="this_month">This Month</string>
+    <string name="today">Today</string>
+    <string name="dash_bord">Dash Bord</string>
+    <string name="sl_no">Sl No</string>
+    <string name="date_text">Date</string>
+    <string name="amount">Amount</string>
+    <string name="list_is_empty">List Is Empty</string>
+    <string name="name">Name</string>
+    <string name="top_up">Top UP</string>
+    <string name="status">Status</string>
+    <string name="joining_data">Joining Data</string>
+    <string name="top_up_capital">TOP UP</string>
+    <string name="transaction_is_empty">Transaction is Empty</string>
+    <string name="user_name">User Name</string>
+    <string name="statistic">Statistic</string>
+    <string name="select_the_month">Select the Month</string>
+    <string name="find">Find</string>
+    <string name="due_amounts">Due Amounts</string>
+    <string name="developed_by_raju_k_r">Developed by Raju K R</string>
+    <string name="edit_user">Edit User</string>
+    <string name="transaction">Transaction</string>
+    <string name="amount_0_0">Amount : 0.0</string>
+
+    <string-array name="plans">
+        <item>MONTHLY</item>
+        <item>QUARTERLY</item>
+        <item>HALF YEARLY</item>
+        <item>ANNUAL</item>
+    </string-array>
+
+    <string-array name="occupations">
+        <item>SELF EMPLOYED</item>
+        <item>EMPLOYED</item>
+        <item>SERVICE</item>
+        <item>STUDENT</item>
+    </string-array>
+
+    <string-array name="status">
+        <item>ACTIVE</item>
+        <item>INACTIVE</item>
+    </string-array>
+
+    <string-array name="filters">
+        <item>ALL</item>
+        <item>TODAY</item>
+        <item>YESTERDAY</item>
+        <item>THIS WEEK</item>
+        <item>THIS MONTH</item>
+        <item>LAST 6 MONTHS</item>
+    </string-array>
+</resources>

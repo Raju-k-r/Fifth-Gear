@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_photo"
+            android:layout_width="60sp"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="8sp"
+            android:padding="4sp"
+            android:src="@drawable/person"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="2dp" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center|start"
+            android:paddingStart="10sp"
+            android:text="User Name"
+            android:textColor="@color/colorAccent"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/due_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|start"
+            android:text="Due Amount"
+            android:textColor="@color/colorAccent"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/active_or_inactive"
+            android:layout_width="16sp"
+            android:layout_height="16sp"
+            android:layout_gravity="center|end"
+            android:layout_marginEnd="25sp"
+            android:background="@drawable/active_background_layout"
+            android:padding="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2sp"
+        android:layout_marginHorizontal="4sp"
+        android:layout_marginStart="70sp"
+        android:layout_marginEnd="10sp"
+        android:background="#A69E9E" />
+</LinearLayout>
