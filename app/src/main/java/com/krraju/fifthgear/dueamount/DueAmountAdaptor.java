@@ -220,15 +220,18 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
                                 smsManager.sendMultipartTextMessage(user.getMobileNumber(), null, pasts, null, null);
 
                             } else {
-                                // == Sending the Text message ==
-                                smsManager.sendTextMessage(user.getMobileNumber(), null,
-                                        // == Generating the Message ==
-                                        String.format("Hi %s %s, Your payment of %.2f Rs was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
-                                                user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))),
-                                        null, null);
-                            }
-                            // == Showing the message ==
+                                // == Generating the Message ==
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                        user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
+                                // == Dividing the message ==
+                                ArrayList<String> parts = smsManager.divideMessage(message);
+
+                                // == Sending the Text message ==
+                                smsManager.sendMultipartTextMessage(user.getMobileNumber(), null, parts, null, null);
+                            }
+
+                            // == Showing the message ==
                             Toast.makeText(context, "Payment added Successfully...", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
 

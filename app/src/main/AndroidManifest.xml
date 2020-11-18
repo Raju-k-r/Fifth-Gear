@@ -2,13 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.krraju.fifthgear">
+
     <!-- User Permissions -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -20,12 +21,36 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-        <activity android:name=".edituser.EditUserDetailsActivity" />
-        <activity android:name=".dueamount.DueAmountActivity" />
-        <activity android:name=".statistics.StatisticActivity" />
-        <activity android:name=".editfees.EditFees" />
-        <activity android:name=".userdetails.UserDetails" />
-        <activity android:name=".viewuser.ViewUser" />
+
+        <!-- Edit User Activity-->
+        <activity
+            android:name=".edituser.EditUserDetailsActivity"
+            android:screenOrientation="portrait" />
+
+        <!-- Due Amount Activity-->
+        <activity
+            android:name=".dueamount.DueAmountActivity"
+            android:screenOrientation="portrait" />
+
+        <!-- Statistic Activity-->
+        <activity
+            android:name=".statistics.StatisticActivity"
+            android:screenOrientation="portrait" />
+
+        <!-- Edit Fees Activity -->
+        <activity
+            android:name=".editfees.EditFees"
+            android:screenOrientation="portrait" />
+
+        <!-- User Details Activity -->
+        <activity
+            android:name=".userdetails.UserDetails"
+            android:screenOrientation="portrait" />
+
+        <!-- View User Activity -->
+        <activity
+            android:name=".viewuser.ViewUser"
+            android:screenOrientation="portrait" />
 
         <!-- Home Screen -->
         <activity

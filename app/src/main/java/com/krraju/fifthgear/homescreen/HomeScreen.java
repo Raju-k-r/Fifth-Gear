@@ -361,7 +361,6 @@ public class HomeScreen extends AppCompatActivity {
                 }
             }
         }
-
     }
 
     @Override

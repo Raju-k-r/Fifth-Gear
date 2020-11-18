@@ -117,7 +117,7 @@ public class UserDetails extends AppCompatActivity {
                 // == Checking for the User Permission ==
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     // == If Permission is not granted requesting for the permission ==
-                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_PERMISSION_REQUEST_CODE);
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_PERMISSION_REQUEST_CODE);
                     return;
                 }
                 // == starting the activity with call intent ==
@@ -127,15 +127,15 @@ public class UserDetails extends AppCompatActivity {
         }).start();
 
         // == Setting on click listener for buttons ==
-        addPaymentButton.setOnClickListener(v-> showPaymentDialog());
-        topUpButton.setOnClickListener(v-> showTopUpDialog());
-        zoomOutImage.setOnClickListener(v-> {
+        addPaymentButton.setOnClickListener(v -> showPaymentDialog());
+        topUpButton.setOnClickListener(v -> showTopUpDialog());
+        zoomOutImage.setOnClickListener(v -> {
             zoomInImage.setVisibility(View.VISIBLE);
             zoomOutImage.setVisibility(View.INVISIBLE);
             userImageFrame.setVisibility(View.VISIBLE);
         });
 
-        outerLayout.setOnClickListener(v->{
+        outerLayout.setOnClickListener(v -> {
             zoomInImage.setVisibility(View.INVISIBLE);
             userImageFrame.setVisibility(View.INVISIBLE);
             zoomOutImage.setVisibility(View.VISIBLE);
@@ -143,7 +143,7 @@ public class UserDetails extends AppCompatActivity {
 
 
         // == Creating the adopter for the Recyclerview ==
-        recyclerView.setAdapter(new TransactionAdaptor(this,userId, isListEmpty));
+        recyclerView.setAdapter(new TransactionAdaptor(this, userId, isListEmpty));
 
         // == Setting the layout manager for the adaptor ==
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -154,7 +154,7 @@ public class UserDetails extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void showTopUpDialog() {
         // == checking the user Id ==
-        if(userId == -1 || userId == 0){
+        if (userId == -1 || userId == 0) {
             // == Showing the error dialog ==
             Toast.makeText(this, "In Valid User Id Please check..", Toast.LENGTH_SHORT).show();
             return;
@@ -182,46 +182,46 @@ public class UserDetails extends AppCompatActivity {
         Spinner plan = dialog.findViewById(R.id.plan);
 
         // == Adding the Adaptor ==
-        ArrayAdapter<CharSequence> planAdapter = ArrayAdapter.createFromResource(this,R.array.plans,android.R.layout.simple_list_item_1);
+        ArrayAdapter<CharSequence> planAdapter = ArrayAdapter.createFromResource(this, R.array.plans, android.R.layout.simple_list_item_1);
         plan.setAdapter(planAdapter);
 
         // == setting the plan spinner ==
         loadFeesFile(plan, fees);
 
         // == Getting user information ==
-        new Thread(()->{
+        new Thread(() -> {
             User user = Database.getInstance(this).userDao().getUser(userId);
-            runOnUiThread(()->{
-                name.setText(String.format("%s: %s %s","Name",  user.getFirstName(), user.getLastName()));
-                dueAmount.setText(String.format("%s: %.2f","Due Amount", user.getDueAmount()));
+            runOnUiThread(() -> {
+                name.setText(String.format("%s: %s %s", "Name", user.getFirstName(), user.getLastName()));
+                dueAmount.setText(String.format("%s: %.2f", "Due Amount", user.getDueAmount()));
             });
         }).start();
 
         // == setting the on click listener ==
-        cancel.setOnClickListener(v-> dialog.dismiss());
-        topUpButton.setOnClickListener(v->{
+        cancel.setOnClickListener(v -> dialog.dismiss());
+        topUpButton.setOnClickListener(v -> {
             // == Checking the fees for empty ==
-            if(fees.getText().toString().isEmpty()){
+            if (fees.getText().toString().isEmpty()) {
                 Toast.makeText(this, "Amount is Empty..", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // == Checking the fees for negative or zero ==
             float newAmount = Float.parseFloat(fees.getText().toString());
-            if(newAmount <= 0){
+            if (newAmount <= 0) {
                 Toast.makeText(this, "Invalid Amount .. ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            new Thread(()->{
+            new Thread(() -> {
 
                 // == Collecting the plan ==
                 Plan userPlan = Plan.fromString(((String) plan.getSelectedItem()));
 
                 int result = Database.getInstance(this).topUpUser(userId, userPlan, newAmount);
 
-                if(result == 1){
-                    runOnUiThread(()-> Toast.makeText(this, "Top Up was Successful...", Toast.LENGTH_SHORT).show());
+                if (result == 1) {
+                    runOnUiThread(() -> Toast.makeText(this, "Top Up was Successful...", Toast.LENGTH_SHORT).show());
                     dialog.dismiss();
 
                     // == restating the Activity ==
@@ -241,7 +241,7 @@ public class UserDetails extends AppCompatActivity {
 
         // == Opening the Properties file to get the fees ==
         File file = new File("/storage/emulated/0/FifthGear/", "fees.properties");
-        try(InputStream inputStream = new FileInputStream(file)){
+        try (InputStream inputStream = new FileInputStream(file)) {
 
             // == Creating the Property instance ==
             Properties properties = new Properties();
@@ -290,7 +290,7 @@ public class UserDetails extends AppCompatActivity {
                 }
             });
 
-        }catch (Exception e){
+        } catch (Exception e) {
             // == Showing the error message ==
             Toast.makeText(this, "Can't Load the Fees please try editing the fees ..", Toast.LENGTH_SHORT).show();
         }
@@ -301,7 +301,7 @@ public class UserDetails extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private void showPaymentDialog() {
         // == checking the user Id ==
-        if(userId == -1 || userId == 0){
+        if (userId == -1 || userId == 0) {
             // == Showing the error dialog ==
             Toast.makeText(this, "In Valid User Id Please check..", Toast.LENGTH_SHORT).show();
             return;
@@ -328,34 +328,34 @@ public class UserDetails extends AppCompatActivity {
         Button addPaymentButton = dialog.findViewById(R.id.top_up);
 
         // == Getting user information ==
-        new Thread(()->{
+        new Thread(() -> {
             user = Database.getInstance(this).userDao().getUser(userId);
-            runOnUiThread(()->{
-                name.setText(String.format("%s: %s %s","Name", user.getFirstName(), user.getLastName()));
-                dueAmount.setText(String.format("%s: %.2f","Due Amount",user.getDueAmount()));
+            runOnUiThread(() -> {
+                name.setText(String.format("%s: %s %s", "Name", user.getFirstName(), user.getLastName()));
+                dueAmount.setText(String.format("%s: %.2f", "Due Amount", user.getDueAmount()));
             });
         }).start();
 
         // == setting the on click listener ==
-        cancel.setOnClickListener(v-> dialog.dismiss());
-        addPaymentButton.setOnClickListener(v->{
+        cancel.setOnClickListener(v -> dialog.dismiss());
+        addPaymentButton.setOnClickListener(v -> {
             // == Checking the amount for empty ==
-            if(amount.getText().toString().isEmpty()){
+            if (amount.getText().toString().isEmpty()) {
                 Toast.makeText(this, "Amount is Empty..", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // == Checking the amount for negative or zero ==
             float newAmount = Float.parseFloat(amount.getText().toString());
-            if(newAmount <= 0){
+            if (newAmount <= 0) {
                 Toast.makeText(this, "Invalid Amount .. ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            new Thread(()->{
+            new Thread(() -> {
                 Transaction transaction = new Transaction(LocalDate.now(), newAmount, userId);
                 int result = Database.getInstance(this).addTransaction(transaction);
-                if(result == 1){
+                if (result == 1) {
                     float remainingAmount = user.getDueAmount() - newAmount;
 
                     // == Checking the Permission For SEND_SMS ==
@@ -367,22 +367,26 @@ public class UserDetails extends AppCompatActivity {
 
                             if (remainingAmount > 0) {
                                 // == Generating the Message ==
-                                String message = String.format("Hi %s %s, Your payment of %.2f Rs was successful on %s, we request you to pay the due amount %.2f Rs as soon as possible. Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, we request you to pay the due amount Rs %.2f as soon as possible. Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
                                         user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), remainingAmount, user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                                 // == Dividing the message ==
-                                ArrayList<String> pasts = smsManager.divideMessage(message);
+                                ArrayList<String> parts = smsManager.divideMessage(message);
 
                                 // == Sending the message ==
-                                smsManager.sendMultipartTextMessage(user.getMobileNumber(), null, pasts, null, null);
+                                smsManager.sendMultipartTextMessage(user.getMobileNumber(), null, parts, null, null);
 
                             } else {
+                                // == Generating the Message ==
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                        user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+
+                                // == Dividing the message ==
+                                ArrayList<String> parts = smsManager.divideMessage(message);
+
                                 // == Sending the Text message ==
-                                smsManager.sendTextMessage(user.getMobileNumber(), null,
-                                        // == Generating the Message ==
-                                        String.format("Hi %s %s, Your payment of %.2f Rs was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
-                                                user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))),
-                                        null, null);
+                                smsManager.sendMultipartTextMessage(user.getMobileNumber(), null, parts, null, null);
+
                             }
                             // == Showing the message ==
 
@@ -398,7 +402,7 @@ public class UserDetails extends AppCompatActivity {
                         // == If Permission is not granted asking for the Permission ==
                         ActivityCompat.requestPermissions(UserDetails.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
                     }
-                    runOnUiThread(()-> Toast.makeText(this, "Payment added Successfully...", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, "Payment added Successfully...", Toast.LENGTH_SHORT).show());
                     dialog.dismiss();
 
                     // == restating the Activity ==
@@ -421,28 +425,28 @@ public class UserDetails extends AppCompatActivity {
     private void updateUI(User user) {
 
         // == finding the view and Setting the data ==
-        ((TextView) findViewById(R.id.due_amount)).setText(String.format("%.2f",user.getDueAmount()));
-        if(user.getDueDate() == null){
-            ((TextView) findViewById(R.id.due_date)).setText(String.format("%s","00-00-0000"));
-        }else{
+        ((TextView) findViewById(R.id.due_amount)).setText(String.format("%.2f", user.getDueAmount()));
+        if (user.getDueDate() == null) {
+            ((TextView) findViewById(R.id.due_date)).setText(String.format("%s", "00-00-0000"));
+        } else {
             ((TextView) findViewById(R.id.due_date)).setText(user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         }
-        ((TextView) findViewById(R.id.user_id)).setText(String.format("%s%05d","FGF", user.getUser_id()));
-        ((TextView) findViewById(R.id.first_name_text)).setText(String.format("%s" , user.getFirstName()));
-        ((TextView) findViewById(R.id.last_name_text)).setText(String.format("%s" , user.getLastName()));
-        ((TextView) findViewById(R.id.age)).setText(String.format("%d" , user.getAge()));
-        ((TextView) findViewById(R.id.gender)).setText(String.format("%s" , user.getGender()));
-        ((TextView) findViewById(R.id.height)).setText(String.format("%.2f" , user.getHeight()));
-        ((TextView) findViewById(R.id.weight)).setText(String.format("%.2f" , user.getWeight()));
-        ((TextView) findViewById(R.id.address)).setText(String.format("%s" , user.getAddress()));
-        ((TextView) findViewById(R.id.mobile_number)).setText(String.format("%s" , user.getMobileNumber()));
-        ((TextView) findViewById(R.id.email)).setText(String.format("%s" , user.getEmail()));
-        ((TextView) findViewById(R.id.fees)).setText(String.format("%.2f" , user.getFees()));
-        ((TextView) findViewById(R.id.plan)).setText(String.format("%s" , user.getPlan()));
-        ((TextView) findViewById(R.id.health_issue)).setText(String.format("%s" , user.getHealthIssue()));
-        ((TextView) findViewById(R.id.occupation)).setText(String.format("%s" , user.getOccupation()));
-        ((TextView) findViewById(R.id.joining_date)).setText(String.format("%s" , user.getJoiningDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
-        ((TextView) findViewById(R.id.status)).setText(String.format("%s" , user.getStatus()));
+        ((TextView) findViewById(R.id.user_id)).setText(String.format("%s%05d", "FGF", user.getUser_id()));
+        ((TextView) findViewById(R.id.first_name_text)).setText(String.format("%s", user.getFirstName()));
+        ((TextView) findViewById(R.id.last_name_text)).setText(String.format("%s", user.getLastName()));
+        ((TextView) findViewById(R.id.age)).setText(String.format("%d", user.getAge()));
+        ((TextView) findViewById(R.id.gender)).setText(String.format("%s", user.getGender()));
+        ((TextView) findViewById(R.id.height)).setText(String.format("%.2f", user.getHeight()));
+        ((TextView) findViewById(R.id.weight)).setText(String.format("%.2f", user.getWeight()));
+        ((TextView) findViewById(R.id.address)).setText(String.format("%s", user.getAddress()));
+        ((TextView) findViewById(R.id.mobile_number)).setText(String.format("%s", user.getMobileNumber()));
+        ((TextView) findViewById(R.id.email)).setText(String.format("%s", user.getEmail()));
+        ((TextView) findViewById(R.id.fees)).setText(String.format("%.2f", user.getFees()));
+        ((TextView) findViewById(R.id.plan)).setText(String.format("%s", user.getPlan()));
+        ((TextView) findViewById(R.id.health_issue)).setText(String.format("%s", user.getHealthIssue()));
+        ((TextView) findViewById(R.id.occupation)).setText(String.format("%s", user.getOccupation()));
+        ((TextView) findViewById(R.id.joining_date)).setText(String.format("%s", user.getJoiningDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+        ((TextView) findViewById(R.id.status)).setText(String.format("%s", user.getStatus()));
         ((ImageView) findViewById(R.id.profile_photo)).setImageURI(Uri.parse(user.getImagePath()));
         ((ImageView) findViewById(R.id.user_enlarged_image)).setImageURI(Uri.parse(user.getImagePath()));
     }
@@ -462,11 +466,11 @@ public class UserDetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         // == Checking the id of the selected menu item ==
-        if(item.getItemId() == R.id.edit_user){
+        if (item.getItemId() == R.id.edit_user) {
 
             // == Starting the Edit User Details Activity ==
-            Intent intent = new Intent(this,EditUserDetailsActivity.class);
-            intent.putExtra("UserId",userId);
+            Intent intent = new Intent(this, EditUserDetailsActivity.class);
+            intent.putExtra("UserId", userId);
             startActivity(intent);
         }
 
@@ -480,7 +484,7 @@ public class UserDetails extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // == Adding the menu for the tool bar ==
-        getMenuInflater().inflate(R.menu.edit_user,menu);
+        getMenuInflater().inflate(R.menu.edit_user, menu);
 
         // == returning true because we have handled method ==
         return true;
