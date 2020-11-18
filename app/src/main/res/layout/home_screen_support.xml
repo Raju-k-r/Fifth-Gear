@@ -114,6 +114,20 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8sp"
+                android:text="@string/this_week"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/home_screen_chart"
+                android:layout_width="match_parent"
+                android:padding="6dp"
+                android:layout_height="250sp"/>
+
 
             <TextView
                 android:layout_width="wrap_content"

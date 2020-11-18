@@ -3,6 +3,7 @@ package com.krraju.fifthgear.statistics;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class StatisticAdaptor extends RecyclerView.Adapter<StatisticAdaptor.View
             getFilter().filter("ALL");
 
             // == Notifying the the data change ==
-            notifyDataSetChanged();
+            ((Activity)context).runOnUiThread(this::notifyDataSetChanged);
         }).start();
     }
 
@@ -163,12 +164,40 @@ public class StatisticAdaptor extends RecyclerView.Adapter<StatisticAdaptor.View
                     break;
                 case "THIS MONTH":
                     // == Looping throw all the User to check for char sequence ==
-                    for(HomeScreenTransaction transaction : allTransaction){
-                        // == Checking the constraint ==
-                        LocalDate firstDay = YearMonth.now().atDay(1);
-                        LocalDate lastDay = YearMonth.now().atEndOfMonth();
+                    LocalDate thisMonthFirstDate = YearMonth.now().atDay(1);
+                    LocalDate thisMonthLastDate = YearMonth.now().atEndOfMonth();
 
-                        if(transaction.getDate().isBefore(lastDay) && transaction.getDate().isAfter(firstDay)){
+                    for(HomeScreenTransaction transaction : allTransaction){
+
+                        // == Checking the constraint ==
+                        if(transaction. getDate().equals(thisMonthFirstDate) || transaction.getDate().equals(thisMonthLastDate)){
+                            filteredList.add(transaction);
+                            total += transaction.getAmount();
+                        }
+                        else if(transaction.getDate().isBefore(thisMonthLastDate) && transaction.getDate().isAfter(thisMonthFirstDate)){
+                            filteredList.add(transaction);
+                            total += transaction.getAmount();
+                        }
+
+                    }
+                    break;
+
+                case "LAST MONTH":
+                    // == Looping throw all the User to check for char sequence ==
+                    LocalDate lastMonthFirstDate = YearMonth.now().minusMonths(1).atDay(1);
+                    LocalDate lastMonthLastDate = YearMonth.now().minusMonths(1).atEndOfMonth();
+
+                    Log.d("Statistic Adaptor", "performFiltering: firstDate->" + lastMonthFirstDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                    Log.d("Statistic Adaptor", "performFiltering: lastDate->" + lastMonthLastDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+
+                    for(HomeScreenTransaction transaction : allTransaction){
+
+                        // == Checking the constraint ==
+                        if(transaction. getDate().equals(lastMonthFirstDate) || transaction.getDate().equals(lastMonthLastDate)){
+                            filteredList.add(transaction);
+                            total += transaction.getAmount();
+                        }
+                        else if(transaction.getDate().isBefore(lastMonthLastDate) && transaction.getDate().isAfter(lastMonthFirstDate)){
                             filteredList.add(transaction);
                             total += transaction.getAmount();
                         }
@@ -176,10 +205,11 @@ public class StatisticAdaptor extends RecyclerView.Adapter<StatisticAdaptor.View
                     break;
                 case "LAST 6 MONTHS":
                     // == Looping throw all the User to check for char sequence ==
+
+                    LocalDate firstDay = YearMonth.now().atDay(1).minusMonths(6);
+
                     for(HomeScreenTransaction transaction : allTransaction){
                         // == Checking the constraint ==
-                        LocalDate firstDay = YearMonth.now().atDay(1).minusMonths(6);
-
                         if(transaction.getDate().isAfter(firstDay)){
                             filteredList.add(transaction);
                             total += transaction.getAmount();

@@ -75,6 +75,10 @@ public class StatisticActivity extends AppCompatActivity {
                         assert statisticRecyclerView.getAdapter() != null;
                         ((StatisticAdaptor) statisticRecyclerView.getAdapter()).getFilter().filter("THIS MONTH");
                         break;
+                    case "LAST MONTH":
+                        assert statisticRecyclerView.getAdapter() != null;
+                        ((StatisticAdaptor) statisticRecyclerView.getAdapter()).getFilter().filter("LAST MONTH");
+                        break;
                     case "LAST 6 MONTHS":
                         assert statisticRecyclerView.getAdapter() != null;
                         ((StatisticAdaptor) statisticRecyclerView.getAdapter()).getFilter().filter("LAST 6 MONTHS");

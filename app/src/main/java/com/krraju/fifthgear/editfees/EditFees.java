@@ -32,6 +32,7 @@ public class EditFees extends AppCompatActivity {
     private static final String FEES_ANNUAL = "Fees.ANNUAL";
     private static final String TAG = EditFees.class.getSimpleName();
     private static final int READ_WRITE_PERMISSION_REQUEST_CODE = 1001;
+    private static final String BASE_PATH = "/storage/emulated/0/FifthGear/";
 
     // == fields ==
     private EditText monthlyFees;
@@ -75,8 +76,15 @@ public class EditFees extends AppCompatActivity {
     }
 
     private void loadFile() {
+
+        // == first checking the directory ==
+        File baseDir = new File(BASE_PATH);
+        if(!baseDir.exists()){
+            baseDir.mkdir();
+        }
+
         // == Opening the Properties file to get the fees ==
-        File file = new File("/storage/emulated/0/FifthGear/", "fees.properties");
+        File file = new File(BASE_PATH, "fees.properties");
 
         // == Checking the file for the existence ==
         if (!file.exists()) {

@@ -61,6 +61,11 @@
     <string name="edit_user">Edit User</string>
     <string name="transaction">Transaction</string>
     <string name="amount_0_0">Amount : 0.0</string>
+    <string name="clear_due">Clear Due</string>
+    <string name="all">All</string>
+    <string name="active">Active</string>
+    <string name="in_active">In Active</string>
+    <string name="this_week">Last 7 Days</string>
 
     <string-array name="plans">
         <item>MONTHLY</item>
@@ -87,6 +92,7 @@
         <item>YESTERDAY</item>
         <item>THIS WEEK</item>
         <item>THIS MONTH</item>
+        <item>LAST MONTH</item>
         <item>LAST 6 MONTHS</item>
     </string-array>
 </resources>

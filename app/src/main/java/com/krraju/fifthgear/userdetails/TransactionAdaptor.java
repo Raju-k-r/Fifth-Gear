@@ -1,6 +1,7 @@
 package com.krraju.fifthgear.userdetails;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.krraju.fifthgear.storage.database.Database;
 import com.krraju.fifthgear.storage.entity.transation.Transaction;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionAdaptor extends RecyclerView.Adapter<TransactionAdaptor.ViewHolder> {
@@ -24,6 +26,8 @@ public class TransactionAdaptor extends RecyclerView.Adapter<TransactionAdaptor.
 
     // == Constructor ==
     public TransactionAdaptor(Context context, int userId, TextView isListEmpty) {
+
+        this.transactions = new ArrayList<>();
         // == Starting new Thread for getting data from  database ==
         new Thread(()-> {
 
@@ -36,7 +40,7 @@ public class TransactionAdaptor extends RecyclerView.Adapter<TransactionAdaptor.
                 isListEmpty.setVisibility(View.GONE);
             }
             // == notifying the data change ==
-            notifyDataSetChanged();
+            ((Activity) context).runOnUiThread(this::notifyDataSetChanged);
         }).start();
     }
 

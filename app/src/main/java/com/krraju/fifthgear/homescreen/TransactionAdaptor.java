@@ -27,13 +27,13 @@ public class TransactionAdaptor extends RecyclerView.Adapter<TransactionAdaptor.
     private static final String TAG = TransactionAdaptor.class.getSimpleName();
 
     // == filed ==
-    private Context context;
     private List<HomeScreenTransaction> transactions;
 
     // == Constructor ==
     public TransactionAdaptor(Context context) {
-        this.context = context;
+
         this.transactions = new ArrayList<>();
+
         // == Collecting the data from database ==
         new Thread(()->{
             List<Transaction> transactions = Database.getInstance(context).transactionDao().getLastTenTransaction();

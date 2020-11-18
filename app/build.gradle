@@ -51,4 +51,7 @@ dependencies {
     // == Round Image View ==
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    // == Linear Graph ==
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 }

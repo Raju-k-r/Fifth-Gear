@@ -132,11 +132,11 @@ public class AddNewUser extends AppCompatActivity {
         // == Setting the Adapter for Occupation spinner ==
         occupationSpinner.setAdapter(occupationArrayAdapter);
 
-        // == Creating the Adaptor for Occupation Spinner ==
+        // == Creating the Adaptor for Status Spinner ==
         @SuppressLint("ResourceType")
         ArrayAdapter<CharSequence> statusArrayAdapter = ArrayAdapter.createFromResource(this, R.array.status, R.layout.adopter_list_view);
 
-        // == Setting the Adapter for Occupation spinner ==
+        // == Setting the Adapter for Status spinner ==
         statusSpinner.setAdapter(statusArrayAdapter);
 
     }

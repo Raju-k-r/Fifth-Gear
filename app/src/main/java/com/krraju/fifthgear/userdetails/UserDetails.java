@@ -1,10 +1,13 @@
 package com.krraju.fifthgear.userdetails;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,6 +26,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,15 +44,19 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class UserDetails extends AppCompatActivity {
 
     // == Constants ==
     private static final String TAG = UserDetails.class.getSimpleName();
+    private static final int CALL_PHONE_PERMISSION_REQUEST_CODE = 321;
+    private static final int SEND_SMS_REQUEST_CODE = 111;
 
     // == fields ==
     private int userId;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +69,11 @@ public class UserDetails extends AppCompatActivity {
         Button topUpButton = findViewById(R.id.top_up_button);
         RecyclerView recyclerView = findViewById(R.id.transaction_recycler_view);
         TextView isListEmpty = findViewById(R.id.list_is_empty);
+        ImageView zoomInImage = findViewById(R.id.user_enlarged_image);
+        ImageView zoomOutImage = findViewById(R.id.profile_photo);
+        FrameLayout userImageFrame = findViewById(R.id.user_image_frame);
+        ConstraintLayout outerLayout = findViewById(R.id.out_side_view);
+        ImageButton callUser = findViewById(R.id.call_user);
 
         // == Setting the tool bar as action bar this activity ==
         setSupportActionBar(toolbar);
@@ -71,20 +88,20 @@ public class UserDetails extends AppCompatActivity {
         Intent intent = getIntent();
 
         // == Checking the intent for not null ==
-        if(intent == null){
+        if (intent == null) {
             Toast.makeText(this, "Something Went wrong..", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // == Getting the User id passed by the intent ==
         userId = intent.getIntExtra("userId", -1);
-        if(userId == -1){
+        if (userId == -1) {
             Toast.makeText(this, "Invalid User ..", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // == Creating the new thread for getting the User data ==
-        new Thread(()->{
+        new Thread(() -> {
 
             // == Collecting the data from the database ==
             User user = Database.getInstance(this).userDao().getUser(userId);
@@ -92,11 +109,38 @@ public class UserDetails extends AppCompatActivity {
             // == Update the UI based on the data ==
             updateUI(user);
 
+            // == Calling the User ==
+            runOnUiThread(() -> callUser.setOnClickListener(v -> {
+                // Creating the INTENT to call the user ==
+                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + user.getMobileNumber()));
+
+                // == Checking for the User Permission ==
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    // == If Permission is not granted requesting for the permission ==
+                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CALL_PHONE}, CALL_PHONE_PERMISSION_REQUEST_CODE);
+                    return;
+                }
+                // == starting the activity with call intent ==
+                startActivity(callIntent);
+            }));
+
         }).start();
 
         // == Setting on click listener for buttons ==
         addPaymentButton.setOnClickListener(v-> showPaymentDialog());
         topUpButton.setOnClickListener(v-> showTopUpDialog());
+        zoomOutImage.setOnClickListener(v-> {
+            zoomInImage.setVisibility(View.VISIBLE);
+            zoomOutImage.setVisibility(View.INVISIBLE);
+            userImageFrame.setVisibility(View.VISIBLE);
+        });
+
+        outerLayout.setOnClickListener(v->{
+            zoomInImage.setVisibility(View.INVISIBLE);
+            userImageFrame.setVisibility(View.INVISIBLE);
+            zoomOutImage.setVisibility(View.VISIBLE);
+        });
+
 
         // == Creating the adopter for the Recyclerview ==
         recyclerView.setAdapter(new TransactionAdaptor(this,userId, isListEmpty));
@@ -104,6 +148,7 @@ public class UserDetails extends AppCompatActivity {
         // == Setting the layout manager for the adaptor ==
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
 
     // == Used to extend the validity of the User ==
     @SuppressLint("DefaultLocale")
@@ -284,7 +329,7 @@ public class UserDetails extends AppCompatActivity {
 
         // == Getting user information ==
         new Thread(()->{
-            User user = Database.getInstance(this).userDao().getUser(userId);
+            user = Database.getInstance(this).userDao().getUser(userId);
             runOnUiThread(()->{
                 name.setText(String.format("%s: %s %s","Name", user.getFirstName(), user.getLastName()));
                 dueAmount.setText(String.format("%s: %.2f","Due Amount",user.getDueAmount()));
@@ -311,6 +356,48 @@ public class UserDetails extends AppCompatActivity {
                 Transaction transaction = new Transaction(LocalDate.now(), newAmount, userId);
                 int result = Database.getInstance(this).addTransaction(transaction);
                 if(result == 1){
+                    float remainingAmount = user.getDueAmount() - newAmount;
+
+                    // == Checking the Permission For SEND_SMS ==
+                    if (ContextCompat.checkSelfPermission(UserDetails.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+
+                        runOnUiThread(() -> {
+                            // == Creating the SMSManager ==
+                            SmsManager smsManager = SmsManager.getDefault();
+
+                            if (remainingAmount > 0) {
+                                // == Generating the Message ==
+                                String message = String.format("Hi %s %s, Your payment of %.2f Rs was successful on %s, we request you to pay the due amount %.2f Rs as soon as possible. Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                        user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), remainingAmount, user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+
+                                // == Dividing the message ==
+                                ArrayList<String> pasts = smsManager.divideMessage(message);
+
+                                // == Sending the message ==
+                                smsManager.sendMultipartTextMessage(user.getMobileNumber(), null, pasts, null, null);
+
+                            } else {
+                                // == Sending the Text message ==
+                                smsManager.sendTextMessage(user.getMobileNumber(), null,
+                                        // == Generating the Message ==
+                                        String.format("Hi %s %s, Your payment of %.2f Rs was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                                user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))),
+                                        null, null);
+                            }
+                            // == Showing the message ==
+
+                            Toast.makeText(UserDetails.this, "Payment added Successfully...", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+
+                            // == restating the Activity ==
+                            finish();
+                            startActivity(getIntent());
+                        });
+
+                    } else {
+                        // == If Permission is not granted asking for the Permission ==
+                        ActivityCompat.requestPermissions(UserDetails.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
+                    }
                     runOnUiThread(()-> Toast.makeText(this, "Payment added Successfully...", Toast.LENGTH_SHORT).show());
                     dialog.dismiss();
 
@@ -357,6 +444,7 @@ public class UserDetails extends AppCompatActivity {
         ((TextView) findViewById(R.id.joining_date)).setText(String.format("%s" , user.getJoiningDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         ((TextView) findViewById(R.id.status)).setText(String.format("%s" , user.getStatus()));
         ((ImageView) findViewById(R.id.profile_photo)).setImageURI(Uri.parse(user.getImagePath()));
+        ((ImageView) findViewById(R.id.user_enlarged_image)).setImageURI(Uri.parse(user.getImagePath()));
     }
 
     // == Adding functionality for the back or up button of tool bar ==

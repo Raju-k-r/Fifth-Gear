@@ -35,6 +35,6 @@ public interface TransactionDao {
     List<Transaction> getThisMonthTransaction(LocalDate firstDate, LocalDate lastDate);
 
     @TypeConverters(DateConverter.class)
-    @Query("SELECT * FROM 'transaction' ORDER BY date DESC")
+    @Query("SELECT * FROM 'transaction' ORDER BY serialNumber DESC")
     List<Transaction> getAllTransactionInDesc();
 }

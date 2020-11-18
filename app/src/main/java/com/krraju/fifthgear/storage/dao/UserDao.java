@@ -51,13 +51,17 @@ public interface UserDao {
     @Query("UPDATE user SET due_date = :dueDate, status = :status WHERE user_id = :userId")
     void updateDueDateAndStatus(LocalDate dueDate, Status status, int userId);
 
-    @Query("SELECT * FROM 'user' WHERE due_amount != 0.0")
+    @Query("SELECT * FROM 'user' WHERE due_amount != 0.0 ORDER BY due_amount DESC")
     List<User> getUsersHavingDueAmount();
 
     @TypeConverters(DateConverter.class)
     @Query("SELECT * FROM 'user' ORDER BY due_date")
     List<User> getUserOnDueDate();
 
-    @Query("UPDATE user SET first_name = :firstName, last_name = :lastName, mobile_number= :phoneNumber WHERE user_id = :userId")
-    int updateUserDetails(String firstName, String lastName, String phoneNumber, int userId);
+    @TypeConverters({StatusConverter.class, DateConverter.class})
+    @Query("UPDATE user SET first_name = :firstName, last_name = :lastName, mobile_number= :phoneNumber, gender=:gender, status=:status, due_date=:date,due_amount =:dueAmount WHERE user_id = :userId")
+    int updateUserDetails(String firstName, String lastName, String phoneNumber,String gender, Status status, LocalDate date, float dueAmount,  int userId);
+
+    @Query("UPDATE user SET due_amount = 0.0 WHERE user_id = :userId")
+    void clearAllDueAmount(int userId);
 }

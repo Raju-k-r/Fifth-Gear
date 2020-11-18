@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +19,9 @@ import androidx.appcompat.widget.Toolbar;
 import com.krraju.fifthgear.R;
 import com.krraju.fifthgear.storage.database.Database;
 import com.krraju.fifthgear.storage.entity.user.User;
+import com.krraju.fifthgear.storage.entity.user.enums.Status;
+
+import java.time.LocalDate;
 
 public class EditUserDetailsActivity extends AppCompatActivity {
 
@@ -26,6 +32,10 @@ public class EditUserDetailsActivity extends AppCompatActivity {
     private EditText phoneNumber;
     private TextView userIdTextView;
     private ImageView userImage;
+    private RadioButton male;
+    private RadioButton female;
+    private Spinner userStatus;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +60,16 @@ public class EditUserDetailsActivity extends AppCompatActivity {
         phoneNumber = findViewById(R.id.phone_number);
         userIdTextView = findViewById(R.id.user_id);
         userImage = findViewById(R.id.user_photo);
+        male = findViewById(R.id.male);
+        female = findViewById(R.id.female);
+        userStatus = findViewById(R.id.status);
+
+        // == Creating the Adaptor for Status Spinner ==
+        @SuppressLint("ResourceType")
+        ArrayAdapter<CharSequence> statusArrayAdapter = ArrayAdapter.createFromResource(this, R.array.status, R.layout.adopter_list_view);
+
+        // == Setting the Adapter for Status spinner ==
+        userStatus.setAdapter(statusArrayAdapter);
 
         // == Getting the Intent ==
         Intent intent = getIntent();
@@ -71,7 +91,7 @@ public class EditUserDetailsActivity extends AppCompatActivity {
         new Thread(()->{
 
             // == Collecting the data from the database ==
-            User user = Database.getInstance(this).userDao().getUser(userId);
+            user = Database.getInstance(this).userDao().getUser(userId);
 
             // == Update the UI based on the data ==
             updateUI(user);
@@ -100,13 +120,55 @@ public class EditUserDetailsActivity extends AppCompatActivity {
             return;
         }
 
+        // == Storing the User data ==
         String firstName = this.firstName.getText().toString().toUpperCase();
         String lastName = this.lastName.getText().toString().toUpperCase();
         String phoneNumber = this.phoneNumber.getText().toString().toLowerCase();
+        String gender;
+        if(male.isChecked()){
+            gender = "MALE";
+        }else{
+            gender = "FEMALE";
+        }
+
+        Status status;
+        LocalDate date;
+        float dueAmount;
+
+        // == Checking for the Status of the User ==
+        if(Status.valueOf((String) userStatus.getSelectedItem()) == Status.ACTIVE){
+               status = Status.ACTIVE;
+               date = user.getDueDate();
+               // == checking if User due date is null ==
+               if(date == null){
+                   // == Updating the user due date based on the plan ==
+                       switch (user.getPlan()) {
+                           case HALF_YEARLY:
+                               date = LocalDate.now().plusMonths(6).minusDays(1);
+                               break;
+                           case QUARTERLY:
+                               date = LocalDate.now().plusMonths(3).minusDays(1);
+                               break;
+                           case MONTHLY:
+                               date = LocalDate.now().plusMonths(1).minusDays(1);
+                               break;
+                           case ANNUAL:
+                               date = LocalDate.now().plusYears(1).minusDays(1);
+                               break;
+                       }
+               }
+        }else{
+            status = Status.INACTIVE;
+            date = null;
+        }
+        dueAmount = user.getDueAmount();
+
+        LocalDate dueDate = date;
 
         // == Creating new Thread for Database Operation ==
         new Thread(()->{
-            int result = Database.getInstance(this).userDao().updateUserDetails(firstName, lastName, phoneNumber, userId);
+            // == Updating the User data ==
+            int result = Database.getInstance(this).userDao().updateUserDetails(firstName, lastName, phoneNumber,gender,status,dueDate,dueAmount,userId);
             if(result == 1){
                 runOnUiThread(()-> {
                     Toast.makeText(this, "User data updated ..", Toast.LENGTH_SHORT).show();
@@ -123,6 +185,7 @@ public class EditUserDetailsActivity extends AppCompatActivity {
                 });
             }
         }).start();
+
     }
 
     @SuppressLint("DefaultLocale")
@@ -132,6 +195,16 @@ public class EditUserDetailsActivity extends AppCompatActivity {
         phoneNumber.setText(user.getMobileNumber());
         userIdTextView.setText(String.format("%s%05d","FGF", userId));
         userImage.setImageURI(Uri.parse(user.getImagePath()));
+        if(user.getGender().equals("MALE")){
+            male.setChecked(true);
+        }else{
+            female.setChecked(true);
+        }
+        if(user.getStatus() == Status.ACTIVE){
+            userStatus.setSelection(0);
+        }else{
+            userStatus.setSelection(1);
+        }
     }
 
     // == Adding functionality for the back or up button of tool bar ==

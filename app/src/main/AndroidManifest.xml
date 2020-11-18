@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -17,24 +20,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-        <activity android:name=".edituser.EditUserDetailsActivity"></activity>
+        <activity android:name=".edituser.EditUserDetailsActivity" />
         <activity android:name=".dueamount.DueAmountActivity" />
         <activity android:name=".statistics.StatisticActivity" />
         <activity android:name=".editfees.EditFees" />
         <activity android:name=".userdetails.UserDetails" />
-        <activity android:name=".viewuser.ViewUser" /> <!-- Home Screen -->
+        <activity android:name=".viewuser.ViewUser" />
+
+        <!-- Home Screen -->
         <activity
             android:name=".homescreen.HomeScreen"
-            android:screenOrientation="portrait" /> <!-- Add New User Screen -->
+            android:screenOrientation="portrait" />
+
+        <!-- Add New User Screen -->
         <activity
             android:name=".addnewuser.AddNewUser"
-            android:screenOrientation="portrait" /> <!-- Flash Screen -->
+            android:screenOrientation="portrait" />
+
+        <!-- Flash Screen -->
         <activity
             android:name=".FlashScreenActivity"
             android:theme="@style/FlashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

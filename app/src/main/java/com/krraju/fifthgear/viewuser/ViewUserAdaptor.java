@@ -12,6 +12,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,12 +34,15 @@ public class ViewUserAdaptor extends RecyclerView.Adapter<ViewUserAdaptor.ViewHo
     private Context context;
     private List<User> allUsersList;
     private List<User> usersList;
+    private RadioGroup radioGroup;
 
     // == Constructors ==
     public ViewUserAdaptor(Context context){
 
         // == initializing the filed ==
         this.context = context;
+        this.usersList = new ArrayList<>();
+        this.radioGroup = ((Activity) context).findViewById(R.id.radioGroup2);
 
         // == Running the new Thread  to perform database operation ==
         new Thread(()->{
@@ -57,7 +61,7 @@ public class ViewUserAdaptor extends RecyclerView.Adapter<ViewUserAdaptor.ViewHo
             }
 
             // == notifying recycler view that the data has changed ==
-            notifyDataSetChanged();
+            ((Activity) context).runOnUiThread(this::notifyDataSetChanged);
 
         }).start();
     }
@@ -125,16 +129,39 @@ public class ViewUserAdaptor extends RecyclerView.Adapter<ViewUserAdaptor.ViewHo
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
+            // == Creating a new List which holds the filtered Users based on the condition ==
+            List<User> conditionalArray = new ArrayList<>();
+
+            switch (radioGroup.getCheckedRadioButtonId()){
+                case R.id.all:
+                    conditionalArray.addAll(allUsersList);
+                    break;
+                case R.id.active:
+                    for(User user : allUsersList){
+                        if(user.getStatus() == Status.ACTIVE){
+                            conditionalArray.add(user);
+                        }
+                    }
+                    break;
+                case R.id.inActive:
+                    for(User user : allUsersList){
+                        if(user.getStatus() == Status.INACTIVE){
+                            conditionalArray.add(user);
+                        }
+                    }
+                    break;
+            }
+
             // == Creating a new List which holds the filtered Users ==
             List<User> filteredList = new ArrayList<>();
 
             // == checking if the char sequence is empty ==
             if(constraint.toString().isEmpty()){
-                filteredList.addAll(allUsersList);
+                filteredList.addAll(conditionalArray);
             }else{
 
                 // == Looping throw all the User to check for char sequence ==
-                for(User user : allUsersList){
+                for(User user : conditionalArray){
 
                     // == Getting the user Full name and checking with char sequence ==
                     String fullName = user.getFirstName() + user.getLastName();

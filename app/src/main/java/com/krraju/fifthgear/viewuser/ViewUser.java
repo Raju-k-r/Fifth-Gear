@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -21,6 +22,8 @@ public class ViewUser extends AppCompatActivity {
     // == fields ==
     private ViewUserAdaptor viewUserAdaptor;
     private RecyclerView usersRecyclerView;
+    private SearchView searchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +65,8 @@ public class ViewUser extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.search);
 
         // == Getting the Search View From the Search menu item ==
-        SearchView searchView = ((SearchView) menuItem.getActionView());
+        searchView = ((SearchView) menuItem.getActionView());
+
 
         // == Adding the textChange listener of the search bar ==
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -114,5 +118,9 @@ public class ViewUser extends AppCompatActivity {
         viewUserAdaptor = new ViewUserAdaptor(this);
         usersRecyclerView.setAdapter(viewUserAdaptor);
         Log.d(TAG, "onRestart: Inside On Restart.. ");
+    }
+
+    public void filterUsers(View view) {
+        viewUserAdaptor.getFilter().filter(searchView.getQuery());
     }
 }
