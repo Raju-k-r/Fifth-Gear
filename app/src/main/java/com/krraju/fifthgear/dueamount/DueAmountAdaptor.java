@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +48,7 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
     public DueAmountAdaptor(Context context) {
 
         this.context = context;
-        users = new ArrayList<>();
+        this.users = new ArrayList<>();
 
         new Thread(() -> {
             // == Collecting the data from database ==
@@ -88,13 +87,37 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
         User user = users.get(position);
         holder.dueAmount.setText(String.format("%.2f", user.getDueAmount()));
         holder.userName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-        holder.imageView.setImageURI(Uri.parse(user.getImagePath()));
+//        holder.imageView.setImageURI(Uri.parse(user.getImagePath()));
+        holder.imageView.setImageBitmap(user.getImage());
         if (user.getStatus() == Status.ACTIVE) {
             holder.view.setBackgroundResource(R.drawable.active_background_layout);
         } else {
             holder.view.setBackgroundResource(R.drawable.inactive_background_layout);
         }
-        holder.layout.setOnClickListener(v -> showPaymentDialog(user));
+        holder.layout.setOnClickListener(v ->{
+            // == Checking the Permission For SEND_SMS ==
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+                showPaymentDialog(user);
+            }else{
+                ActivityCompat.requestPermissions(((Activity) context), new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
+            }
+
+        });
+
+        // == Setting onLongClickListener ==
+        holder.layout.setOnLongClickListener(v -> {
+
+            // == Creating new Dialog and showing to user ==
+            new AlertDialog.Builder(context, R.style.AlertDialog)
+                    .setCancelable(false)
+                    .setTitle("SEND REMAINDER MESSAGE")
+                    .setMessage(String.format("Do You want to send the remainder message to %s %s ?", user.getFirstName(), user.getLastName()))
+                    .setPositiveButton("SEND", ((dialog, which) -> sendRemainderMessageToUser(user)))
+                    .setNegativeButton("CANCEL", (dialog, which) -> dialog.dismiss())
+                    .show();
+            // == Since we handled on click listener returning true ==
+            return true;
+        });
     }
 
     @Override
@@ -102,7 +125,33 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
         return users.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    // == This method will send the Remainder message  to the user ==
+    @SuppressLint("DefaultLocale")
+    private void sendRemainderMessageToUser(User user) {
+
+        // == Checking the Permission For SEND_SMS ==
+        if(ContextCompat.checkSelfPermission(context,Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED){
+            // == If Permission is Granted showing the alert dialog ==
+
+            // == Creating the SMSManager ==
+            SmsManager smsManager = SmsManager.getDefault();
+
+            // == Sending the Text message ==
+            smsManager.sendTextMessage(user.getMobileNumber(), null,
+                    // == Generating the Message ==
+                    String.format("Remainder : Hi %s %s, Your due amount of Rs %.2f remaining please clear the due as soon as possible.\nThank you. \n\nRegards Fifth Gear Fitness",
+                            user.getFirstName(), user.getLastName(), user.getDueAmount()),
+                    null, null);
+
+            // == Showing the Toast message after sending the message ==
+            Toast.makeText(context, String.format("Remainder Message sent to %s %s ..", user.getFirstName(), user.getLastName()), Toast.LENGTH_SHORT).show();
+
+        }else{
+            ActivityCompat.requestPermissions(((Activity)context), new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE );
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         private View view;
         private TextView userName;
@@ -118,6 +167,7 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
             dueAmount = itemView.findViewById(R.id.due_amount);
             layout = itemView.findViewById(R.id.layout);
         }
+
     }
 
     // == This method will add the payment for the user ==
@@ -156,30 +206,29 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
         dueAmount.setText(String.format("%s: %.2f", "Due Amount", user.getDueAmount()));
 
         // == setting the on click listener ==
-        cancel.setOnClickListener(v -> ((Activity) context).runOnUiThread(() -> new AlertDialog.Builder(context)
-                .setTitle("INFO")
-                .setMessage(String.format("%s%.2f%s%s", "Are You sure you want to Clear the Due amount ", user.getDueAmount(), " of the user ", user.getFirstName()))
-                .setPositiveButton("Yes", (dialog1, which) -> {
-                    if (user.getDueAmount() != 0) {
-                        new Thread(() -> {
-                            Database.getInstance(context).userDao().clearAllDueAmount(userId);
-                            ((Activity) context).runOnUiThread(() -> {
-                                Toast.makeText(context, "Due amount was cleared..", Toast.LENGTH_SHORT).show();
-                                dialog1.dismiss();
-                                dialog.dismiss();
+        cancel.setOnClickListener(v -> ((Activity) context).runOnUiThread(() -> {
+            dialog.dismiss();
+            new AlertDialog.Builder(context, R.style.AlertDialog)
+                    .setTitle("CLEAR DUE")
+                    .setMessage(String.format("%s%.2f%s%s %s ?", "Are you sure you want to clear the due amount Rs ", user.getDueAmount(), " of the user ", user.getFirstName(), user.getLastName()))
+                    .setPositiveButton("Yes", (dialog1, which) -> {
+                        if (user.getDueAmount() != 0) {
+                            new Thread(() -> {
+                                Database.getInstance(context).userDao().clearAllDueAmount(userId);
+                                ((Activity) context).runOnUiThread(() -> {
+                                    Toast.makeText(context, "Due amount was cleared..", Toast.LENGTH_SHORT).show();
+                                    dialog1.dismiss();
 
-                                ((Activity) context).finish();
-                                context.startActivity(new Intent(((Activity) context).getIntent()));
-                            });
-                        }).start();
-                    }
-                })
-                .setNegativeButton("NO", (dialog1, which) -> {
-                    dialog1.dismiss();
-                    dialog.dismiss();
-                })
-                .setCancelable(false)
-                .show()));
+                                    ((Activity) context).finish();
+                                    context.startActivity(new Intent(((Activity) context).getIntent()));
+                                });
+                            }).start();
+                        }
+                    })
+                    .setNegativeButton("NO", (dialog1, which) -> dialog1.dismiss())
+                    .setCancelable(false)
+                    .show();
+        }));
 
         addPaymentButton.setOnClickListener(v -> {
             // == Checking the amount for empty ==
@@ -210,7 +259,7 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
 
                             if (remainingAmount > 0) {
                                 // == Generating the Message ==
-                                String message = String.format("Hi %s %s, Your payment of %.2f Rs was successful on %s, we request you to pay the due amount %.2f Rs as soon as possible. Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, we request you to pay the due amount Rs %.2f as soon as possible. Your account is going to expire on %s.\nThank you. \n\nRegards Fifth Gear Fitness",
                                         user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), remainingAmount, user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                                 // == Dividing the message ==
@@ -221,7 +270,7 @@ public class DueAmountAdaptor extends RecyclerView.Adapter<DueAmountAdaptor.View
 
                             } else {
                                 // == Generating the Message ==
-                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, Your account is going to expire on %s.\nThank you. \n\nRegards Fifth Gear Fitness",
                                         user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                                 // == Dividing the message ==

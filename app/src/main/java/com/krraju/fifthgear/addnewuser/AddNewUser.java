@@ -3,6 +3,7 @@ package com.krraju.fifthgear.addnewuser;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,10 +35,7 @@ import com.krraju.fifthgear.storage.entity.user.enums.Plan;
 import com.krraju.fifthgear.storage.entity.user.enums.Status;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class AddNewUser extends AppCompatActivity {
 
@@ -119,13 +116,17 @@ public class AddNewUser extends AppCompatActivity {
         // == Setting the Adapter for Plans spinner ==
         planSpinner.setAdapter(planArrayAdapter);
 
-       if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-           ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_TO_EXTERNAL_STORAGE_REQUEST_CODE);
-       }else{
-           loadFeesFile();
-       }
+//       if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+//           ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_TO_EXTERNAL_STORAGE_REQUEST_CODE);
+//       }else{
+//           loadFeesFile();
+//       }
 
         // == Creating the Adaptor for Occupation Spinner ==
+
+        // == Loading the Fees ==
+        loadFees();
+
         @SuppressLint("ResourceType")
         ArrayAdapter<CharSequence> occupationArrayAdapter = ArrayAdapter.createFromResource(this, R.array.occupations, R.layout.adopter_list_view);
 
@@ -141,64 +142,74 @@ public class AddNewUser extends AppCompatActivity {
 
     }
 
-    // == load the fees from properties file ==
-    private void loadFeesFile() {
+    // == load the fees from shared preference ==
+    private void loadFees() {
 
-        // == Opening the Properties file to get the fees ==
-        File file = new File("/storage/emulated/0/FifthGear/", "fees.properties");
-        try(InputStream inputStream = new FileInputStream(file)){
+        // == Contents ==
+        String FEES_MONTHLY = "Fees.MONTHLY";
+        String FEES_QUARTERLY = "Fees.QUARTERLY";
+        String FEES_HALF_YEARLY = "Fees.HALF_YEARLY";
+        String FEES_ANNUAL = "Fees.ANNUAL";
+        String FEES = "Fees";
 
-            // == Creating the Property instance ==
-            Properties properties = new Properties();
+        // == Opening Shared Preference ==
+        SharedPreferences sharedPreferences = getSharedPreferences(FEES,MODE_PRIVATE);
 
-            // == Loading the from input stream ==
-            properties.load(inputStream);
+//        // == Opening the Properties file to get the fees ==
+//        File file = new File("/storage/emulated/0/FifthGear/", "fees.properties");
+//        try(InputStream inputStream = new FileInputStream(file)){
+//
+//            // == Creating the Property instance ==
+//            Properties properties = new Properties();
+//
+//            // == Loading the from input stream ==
+//            properties.load(inputStream);
 
-            // == Setting item selected listener for Plans spinner ==
-            planSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @SuppressLint("DefaultLocale")
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                    // == checking the item selected in spinner and Setting the fees field ==
-                    switch (position) {
+        // == Setting item selected listener for Plans spinner ==
+        planSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("DefaultLocale")
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                        // == If Selected item is MONTHLY ==
-                        case 0:
-                            // == Setting the MONTHLY fee ==
-                            fees.setText(properties.getProperty("Fees.MONTHLY"));
-                            break;
+                // == checking the item selected in spinner and Setting the fees field ==
+                switch (position) {
 
-                        // == If Selected item is QUARTERLY ==
-                        case 1:
-                            // == Setting the QUARTERLY fee ==
-                            fees.setText(properties.getProperty("Fees.QUARTERLY"));
-                            break;
+                    // == If Selected item is MONTHLY ==
+                    case 0:
+                        // == Setting the MONTHLY fee ==
+                        fees.setText(String.valueOf(sharedPreferences.getInt(FEES_MONTHLY,0)));
+                        break;
 
-                        // == If Selected item is HALF YEARLY ==
-                        case 2:
-                            // == Setting the HALF YEARLY fee ==
-                            fees.setText(properties.getProperty("Fees.HALF_YEARLY"));
-                            break;
+                    // == If Selected item is QUARTERLY ==
+                    case 1:
+                        // == Setting the QUARTERLY fee ==
+                        fees.setText(String.valueOf(sharedPreferences.getInt(FEES_QUARTERLY,0)));
+                        break;
 
-                        // == If Selected item is ANNUAL ==
-                        case 3:
-                            // == Setting the ANNUAL fee ==
-                            fees.setText(properties.getProperty("Fees.ANNUAL"));
-                            break;
-                    }
+                    // == If Selected item is HALF YEARLY ==
+                    case 2:
+                        // == Setting the HALF YEARLY fee ==
+                        fees.setText(String.valueOf(sharedPreferences.getInt(FEES_HALF_YEARLY,0)));
+                        break;
+
+                    // == If Selected item is ANNUAL ==
+                    case 3:
+                        // == Setting the ANNUAL fee ==
+                        fees.setText(String.valueOf(sharedPreferences.getInt(FEES_ANNUAL,0)));
+                        break;
                 }
+            }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                }
-            });
-
-        }catch (Exception e){
-            // == Showing the error message ==
-            Toast.makeText(this, "Can't Load the Fees please try editing the fees ..", Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
+//        }catch (Exception e){
+//            // == Showing the error message ==
+//            Toast.makeText(this, "Can't Load the Fees please try editing the fees ..", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     // == Capturing the User Photo From Camera ==
@@ -299,12 +310,12 @@ public class AddNewUser extends AppCompatActivity {
 
             // == If user is present then showing Error the Dialog ==
             if (result != 0) {
-                runOnUiThread(() -> new AlertDialog.Builder(this)
+                runOnUiThread(() -> new AlertDialog.Builder(this, R.style.AlertDialog)
                         .setTitle("Error")
                         .setMessage("User Already Present ..")
                         .setPositiveButton("OK", ((dialog, which) -> dialog.dismiss()))
                         .show());
-            }else{
+            } else {
 
                 // == Storing the User ==
                 storeTheUser();
@@ -319,18 +330,18 @@ public class AddNewUser extends AppCompatActivity {
             ActivityCompat.requestPermissions(AddNewUser.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_TO_EXTERNAL_STORAGE_REQUEST_CODE);
         } else {
             // == Save the Image in External Storage ==
-            String path = storeTheImage();
+//            String path = storeTheImage();
 
             // == Checking the image stored or not ==
-            if (path != null) {
+            if (bitmap != null) {
                 // == since the image stored adding the new user to database ==
-                addUserToDatabase(path);
+                addUserToDatabase();
             }
         }
     }
 
     // == Add the user to database based on the given information ==
-    private void addUserToDatabase(String imagePath) {
+    private void addUserToDatabase() {
 
         // == Collecting the User information ==
         String firstName = this.firstName.getText().toString().toUpperCase();
@@ -359,7 +370,7 @@ public class AddNewUser extends AppCompatActivity {
 
             // == Creating the New User Instance ==
             assert plan != null;
-            User newUser = new User(firstName, lastName, age, gender, height, weight, address, mobileNumber, email, plan, occupation, fees, healthIssue, imagePath,status);
+            User newUser = new User(firstName, lastName, age, gender, height, weight, address, mobileNumber, email, plan, occupation, fees, healthIssue, bitmap, status);
 
 
             // == Adding the new User To database ==
@@ -403,7 +414,7 @@ public class AddNewUser extends AppCompatActivity {
         }
 
         // == Generating the File name ==
-        String fileName = System.currentTimeMillis() +  ".jpeg";
+        String fileName = System.currentTimeMillis() + ".jpeg";
 
         // == Creating the new File ==
         File imageFile = new File(BASE_PATH, fileName);
@@ -447,52 +458,52 @@ public class AddNewUser extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    // == Checking the User Permission Result ==
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        // == Validating the Request Code ==
-        switch (requestCode) {
-
-            // == Validating the Request Code of CAMERA ==
-            case CAMERA_PERMISSION_REQUEST_CODE:
-
-                // == Checking the Permission Result ==
-                if (permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // == Calling the Function for starting the camera for Image ==
-                    selectTheImage();
-                } else {
-                    // == User has not Permission the permission ==
-                    Toast.makeText(this, "The Permission Denied Please Give the permission", Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-
-            // == Validating the Request Code of  WRITE_TO_EXTERNAL_STORAGE ==
-            case WRITE_TO_EXTERNAL_STORAGE_REQUEST_CODE:
-                // == Checking the Permission Result ==
-                if (permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // == Calling the Function for starting the camera for Image ==
-                    storeTheUser();
-                } else {
-                    // == User has not Permission the permission ==
-                    Toast.makeText(this, "The Permission Denied Please Give the permission", Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-
-            case READ_TO_EXTERNAL_STORAGE_REQUEST_CODE:
-                // == Checking the Permission Result ==
-                if (permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // == Calling the Function for starting the camera for Image ==
-                    loadFeesFile();
-                } else {
-                    // == User has not Permission the permission ==
-                    Toast.makeText(this, "The Permission Denied Please Give the permission", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
+//    // == Checking the User Permission Result ==
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//
+//        // == Validating the Request Code ==
+//        switch (requestCode) {
+//
+//            // == Validating the Request Code of CAMERA ==
+//            case CAMERA_PERMISSION_REQUEST_CODE:
+//
+//                // == Checking the Permission Result ==
+//                if (permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // == Calling the Function for starting the camera for Image ==
+//                    selectTheImage();
+//                } else {
+//                    // == User has not Permission the permission ==
+//                    Toast.makeText(this, "The Permission Denied Please Give the permission", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                break;
+//
+//            // == Validating the Request Code of  WRITE_TO_EXTERNAL_STORAGE ==
+//            case WRITE_TO_EXTERNAL_STORAGE_REQUEST_CODE:
+//                // == Checking the Permission Result ==
+//                if (permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // == Calling the Function for starting the camera for Image ==
+//                    storeTheUser();
+//                } else {
+//                    // == User has not Permission the permission ==
+//                    Toast.makeText(this, "The Permission Denied Please Give the permission", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                break;
+//
+//            case READ_TO_EXTERNAL_STORAGE_REQUEST_CODE:
+//                // == Checking the Permission Result ==
+//                if (permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // == Calling the Function for starting the camera for Image ==
+//                    loadFeesFile();
+//                } else {
+//                    // == User has not Permission the permission ==
+//                    Toast.makeText(this, "The Permission Denied Please Give the permission", Toast.LENGTH_SHORT).show();
+//                }
+//                break;
+//        }
+//    }
 
     // == Adding functionality for the back or up button of tool bar ==
     @Override

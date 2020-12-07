@@ -79,6 +79,7 @@ public class FlashScreenActivity extends AppCompatActivity {
     }
 
     public void loadAndStartActivity() {
+
         // == Updating the user Expiry date and User state ==
         new Thread(() -> {
 

@@ -28,4 +28,10 @@
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
+    <!-- Alert Dialog -->
+    <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/alert_dialog_background</item>
+        <item name="android:paddingTop">2sp</item>
+    </style>
+
 </resources>

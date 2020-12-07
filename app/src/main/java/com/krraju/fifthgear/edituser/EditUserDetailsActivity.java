@@ -2,7 +2,6 @@ package com.krraju.fifthgear.edituser;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -194,7 +193,8 @@ public class EditUserDetailsActivity extends AppCompatActivity {
         lastName.setText(user.getLastName());
         phoneNumber.setText(user.getMobileNumber());
         userIdTextView.setText(String.format("%s%05d","FGF", userId));
-        userImage.setImageURI(Uri.parse(user.getImagePath()));
+//        userImage.setImageURI(Uri.parse(user.getImagePath()));
+        userImage.setImageBitmap(user.getImage());
         if(user.getGender().equals("MALE")){
             male.setChecked(true);
         }else{

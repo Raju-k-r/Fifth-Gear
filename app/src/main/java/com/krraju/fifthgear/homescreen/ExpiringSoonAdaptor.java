@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +70,7 @@ public class ExpiringSoonAdaptor extends RecyclerView.Adapter<ExpiringSoonAdapto
             if (this.userList.isEmpty()) {
                 isExpiringSoonEmpty.setVisibility(View.VISIBLE);
             } else {
-                isExpiringSoonEmpty.setVisibility(View.INVISIBLE);
+                isExpiringSoonEmpty.setVisibility(View.GONE);
             }
             // == notifying data change ==
             ((Activity) context).runOnUiThread(this::notifyDataSetChanged);
@@ -88,7 +87,8 @@ public class ExpiringSoonAdaptor extends RecyclerView.Adapter<ExpiringSoonAdapto
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = userList.get(position);
-        holder.userImage.setImageURI(Uri.parse(user.getImagePath()));
+//        holder.userImage.setImageURI(Uri.parse(user.getImagePath()));
+        holder.userImage.setImageBitmap(user.getImage());
         holder.userName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
         holder.expiringSoon.setBackgroundResource(R.drawable.expiring_soon_background_layout);
         holder.layout.setOnClickListener(v -> showDialog(user));
@@ -100,9 +100,10 @@ public class ExpiringSoonAdaptor extends RecyclerView.Adapter<ExpiringSoonAdapto
             // == If Permission is Granted showing the alert dialog ==
 
             // == Creating the new Alert Dialog ==
-            new AlertDialog.Builder(context)
-                    .setTitle("Send Message")
-                    .setMessage(String.format("Do You want to send the message to %s %s (%s)?", user.getFirstName(), user.getLastName(), user.getMobileNumber()))
+            new AlertDialog.Builder(context, R.style.AlertDialog)
+                    .setTitle("SEND MESSAGE")
+                    .setCancelable(false)
+                    .setMessage(String.format("Do you want to send expiring soon message to %s %s ?", user.getFirstName(), user.getLastName()))
                     .setPositiveButton("SEND", (dialog1, which) -> {
                         // == Creating the SMSManager ==
                         SmsManager smsManager = SmsManager.getDefault();
@@ -110,12 +111,13 @@ public class ExpiringSoonAdaptor extends RecyclerView.Adapter<ExpiringSoonAdapto
                         // == Sending the Text message ==
                         smsManager.sendTextMessage(user.getMobileNumber(), null,
                                 // == Generating the Message ==
-                                String.format("Hi %s %s, Your payment due date is going to expire on %s. Please Pay the fees.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                String.format("Hi %s %s, Your payment due date is going to expire on %s. Please Pay the fees.\nThank you. \n\nRegards Fifth Gear Fitness",
                                         user.getFirstName(), user.getLastName(), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))),
                                 null, null);
                         // == Showing the Toast message after sending the message ==
                         Toast.makeText(context, String.format("Message sent to %s %s ..", user.getFirstName(), user.getLastName()), Toast.LENGTH_SHORT).show();
                     })
+                    .setNegativeButton("CANCEL", (dialog, which) -> dialog.dismiss())
                     // == Showing the Alert Dialog ==
                     .show();
         } else {

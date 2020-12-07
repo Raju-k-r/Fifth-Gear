@@ -1,11 +1,14 @@
 package com.krraju.fifthgear.storage.entity.user;
 
+import android.graphics.Bitmap;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.krraju.fifthgear.storage.entity.user.converters.DateConverter;
+import com.krraju.fifthgear.storage.entity.user.converters.ImageConverter;
 import com.krraju.fifthgear.storage.entity.user.converters.OccupationConverter;
 import com.krraju.fifthgear.storage.entity.user.converters.PlanConverter;
 import com.krraju.fifthgear.storage.entity.user.converters.StatusConverter;
@@ -17,12 +20,14 @@ import java.time.LocalDate;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
 public class User {
 
     // == fields ==
@@ -61,8 +66,8 @@ public class User {
     @ColumnInfo(name = "health_issue")
     private String healthIssue;
 
-    @ColumnInfo(name = "image_path")
-    private String imagePath;
+    @TypeConverters(ImageConverter.class)
+    private Bitmap image;
 
     @TypeConverters(DateConverter.class)
     private LocalDate joiningDate;
@@ -80,7 +85,7 @@ public class User {
     // == Public Constructor ==
     public User(String firstName, String lastName, int age, String gender, float height, float weight,
                 String address, String mobileNumber, String email, Plan plan, Occupation occupation,
-                float fees, String healthIssue, String imagePath, Status status) {
+                float fees, String healthIssue, Bitmap image, Status status) {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -95,7 +100,7 @@ public class User {
         this.occupation = occupation;
         this.fees = fees;
         this.healthIssue = healthIssue;
-        this.imagePath = imagePath;
+        this.image = image;
         this.joiningDate = LocalDate.now();
         this.status = status;
 

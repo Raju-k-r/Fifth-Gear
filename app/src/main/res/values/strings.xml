@@ -30,7 +30,7 @@
     <string name="health_issue">Health Issue</string>
     <string name="due_amount">Due Amount</string>
     <string name="due_date">Due Date</string>
-    <string name="date">0000-00-00</string>
+    <string name="date">0000–00-00</string>
     <string name="monthly">Monthly</string>
     <string name="annual">Annual</string>
     <string name="half_yearly">Half yearly</string>
@@ -66,6 +66,7 @@
     <string name="active">Active</string>
     <string name="in_active">In Active</string>
     <string name="this_week">Last 7 Days</string>
+    <string name="backup_or_restore">Backup or Restore</string>
 
     <string-array name="plans">
         <item>MONTHLY</item>
@@ -75,10 +76,10 @@
     </string-array>
 
     <string-array name="occupations">
-        <item>SELF EMPLOYED</item>
-        <item>EMPLOYED</item>
-        <item>SERVICE</item>
         <item>STUDENT</item>
+        <item>SERVICE</item>
+        <item>EMPLOYED</item>
+        <item>SELF EMPLOYED</item>
     </string-array>
 
     <string-array name="status">

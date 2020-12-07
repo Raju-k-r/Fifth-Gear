@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +77,8 @@ public class ViewUserAdaptor extends RecyclerView.Adapter<ViewUserAdaptor.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = usersList.get(position);
         holder.userName.setText(user.getFirstName() + " " + user.getLastName());
-        holder.imageView.setImageURI(Uri.parse(user.getImagePath()));
+//        holder.imageView.setImageURI(Uri.parse(user.getImagePath()));
+        holder.imageView.setImageBitmap(user.getImage());
         holder.linearLayout.setOnClickListener(v-> {
             Intent intent = new Intent(context, UserDetails.class);
             intent.putExtra("userId", user.getUser_id());

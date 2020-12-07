@@ -27,4 +27,9 @@
         android:title="@string/edit_fees"
         android:icon="@drawable/fees_logo"/>
 
+    <item
+        android:id="@+id/backup_or_restore"
+        android:title="@string/backup_or_restore"
+        android:icon="@drawable/backup_or_restore_icon"/>
+
 </menu>

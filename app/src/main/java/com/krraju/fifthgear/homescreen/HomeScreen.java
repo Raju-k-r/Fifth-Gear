@@ -1,20 +1,25 @@
 package com.krraju.fifthgear.homescreen;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,6 +58,7 @@ public class HomeScreen extends AppCompatActivity {
 
     // == constants ==
     private static final String TAG = HomeScreen.class.getSimpleName();
+    private static final int READ_WRITE_PERMISSION_REQUEST_CODE = 112;
 
     // == fields ==
     private TextView todayAmount;
@@ -66,7 +72,6 @@ public class HomeScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_home_screen);
 
         // == fields ==
@@ -116,23 +121,71 @@ public class HomeScreen extends AppCompatActivity {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
 
+                // == checking for view user item ==
                 case R.id.view_users:
                     Log.d(TAG, "onCreate: View User");
                     startActivity(new Intent(HomeScreen.this, ViewUser.class));
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
 
+                // == checking for statistic item ==
                 case R.id.statistic:
                     Log.d(TAG, "onCreate: Statistic");
                     startActivity(new Intent(HomeScreen.this, StatisticActivity.class));
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
 
+                // == checking for due amount item ==
                 case R.id.due_amount:
                     Log.d(TAG, "onCreate: Due Amount");
                     startActivity(new Intent(HomeScreen.this, DueAmountActivity.class));
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
+
+                // == checking for backup or restore item ==
+                case R.id.backup_or_restore:
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    Log.d(TAG, "onCreate: Due Amount");
+                    new AlertDialog.Builder(this, R.style.AlertDialog)
+                            .setTitle("Backup or Restore")
+                            .setMessage("Do You want your data to Backup or Restore ?\n\nNote: Click out side dialog to dismiss")
+                            .setPositiveButton("Backup", (dialog, which) -> {
+                                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                                        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    ProgressDialog progressDialog = new ProgressDialog(this);
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setTitle("Backuping Data");
+                                    progressDialog.setMessage("Please Wait ..");
+                                    progressDialog.show();
+                                    Database.backUp(this);
+                                    Toast.makeText(this, "Backup clicked", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    dialog.dismiss();
+                                    startActivity(getIntent());
+                                } else {
+                                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, READ_WRITE_PERMISSION_REQUEST_CODE);
+                                }
+                            })
+                            .setNegativeButton("Restore", (dialog, which) -> {
+
+                                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                                        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    ProgressDialog progressDialog = new ProgressDialog(this);
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setTitle("Restoring Data");
+                                    progressDialog.setMessage("Please Wait ..");
+                                    progressDialog.show();
+                                    Database.restore(this);
+                                    Toast.makeText(this, "Restore clicked", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    dialog.dismiss();
+                                    startActivity(getIntent());
+                                } else {
+                                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, READ_WRITE_PERMISSION_REQUEST_CODE);
+                                }
+                            })
+                            .show();
+
             }
 
             return true;
@@ -254,19 +307,19 @@ public class HomeScreen extends AppCompatActivity {
                 String v = Float.toString(value);
                 switch (v) {
                     case "2.0":
-                        return LocalDate.now().minusDays(6).getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().minusDays(6).getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     case "4.0":
-                        return LocalDate.now().minusDays(5).getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().minusDays(5).getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     case "6.0":
-                        return LocalDate.now().minusDays(4).getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().minusDays(4).getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     case "8.0":
-                        return LocalDate.now().minusDays(3).getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().minusDays(3).getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     case "10.0":
-                        return LocalDate.now().minusDays(2).getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().minusDays(2).getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     case "12.0":
-                        return LocalDate.now().minusDays(1).getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().minusDays(1).getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     case "14.0":
-                        return LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.SHORT,new Locale("en"));
+                        return LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("en"));
                     default:
                         return "";
                 }
@@ -286,7 +339,7 @@ public class HomeScreen extends AppCompatActivity {
         lineDataSet.setValueTextSize(18f);
 
         // == Adding Animation ==
-        lineChart.animateXY(3000,3000);
+        lineChart.animateXY(3000, 3000);
 
 
     }
@@ -350,13 +403,13 @@ public class HomeScreen extends AppCompatActivity {
         Future<ArrayList<Entry>> future = executor.submit(callable);
 
         // == Getting the data from service ==
-        while (true){
+        while (true) {
             try {
                 return future.get();
             } catch (ExecutionException | InterruptedException e) {
-                try{
+                try {
                     Thread.sleep(1000);
-                }catch (InterruptedException ignored){
+                } catch (InterruptedException ignored) {
 
                 }
             }

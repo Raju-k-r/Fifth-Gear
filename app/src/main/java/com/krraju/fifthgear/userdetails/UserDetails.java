@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,13 +40,9 @@ import com.krraju.fifthgear.storage.entity.transation.Transaction;
 import com.krraju.fifthgear.storage.entity.user.User;
 import com.krraju.fifthgear.storage.entity.user.enums.Plan;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class UserDetails extends AppCompatActivity {
 
@@ -127,7 +124,16 @@ public class UserDetails extends AppCompatActivity {
         }).start();
 
         // == Setting on click listener for buttons ==
-        addPaymentButton.setOnClickListener(v -> showPaymentDialog());
+        addPaymentButton.setOnClickListener(v -> {
+            // == Checking the Permission For SEND_SMS ==
+            if (ContextCompat.checkSelfPermission(UserDetails.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+                // == Showing Payment dialog ==
+                showPaymentDialog();
+            } else {
+                // == If permission is not granted asking permission ==
+                ActivityCompat.requestPermissions(UserDetails.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
+            }
+        });
         topUpButton.setOnClickListener(v -> showTopUpDialog());
         zoomOutImage.setOnClickListener(v -> {
             zoomInImage.setVisibility(View.VISIBLE);
@@ -239,15 +245,24 @@ public class UserDetails extends AppCompatActivity {
     // == load the fees from properties file ==
     private void loadFeesFile(Spinner planSpinner, EditText fees) {
 
-        // == Opening the Properties file to get the fees ==
-        File file = new File("/storage/emulated/0/FifthGear/", "fees.properties");
-        try (InputStream inputStream = new FileInputStream(file)) {
+        // == Constants ==
+        final String FEES_MONTHLY = "Fees.MONTHLY";
+        final String FEES_QUARTERLY = "Fees.QUARTERLY";
+        final String FEES_HALF_YEARLY = "Fees.HALF_YEARLY";
+        final String FEES_ANNUAL = "Fees.ANNUAL";
+        final String FEES = "Fees";
+        final SharedPreferences sharedPreferences = getSharedPreferences(FEES,MODE_PRIVATE);
 
-            // == Creating the Property instance ==
-            Properties properties = new Properties();
 
-            // == Loading the from input stream ==
-            properties.load(inputStream);
+//        // == Opening the Properties file to get the fees ==
+//        File file = new File("/storage/emulated/0/FifthGear/", "fees.properties");
+//        try (InputStream inputStream = new FileInputStream(file)) {
+//
+//            // == Creating the Property instance ==
+//            Properties properties = new Properties();
+//
+//            // == Loading the from input stream ==
+//            properties.load(inputStream);
 
             // == Setting item selected listener for Plans spinner ==
             planSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -261,25 +276,25 @@ public class UserDetails extends AppCompatActivity {
                         // == If Selected item is MONTHLY ==
                         case 0:
                             // == Setting the MONTHLY fee ==
-                            fees.setText(properties.getProperty("Fees.MONTHLY"));
+                            fees.setText(String.valueOf(sharedPreferences.getInt(FEES_MONTHLY,0)));
                             break;
 
                         // == If Selected item is QUARTERLY ==
                         case 1:
                             // == Setting the QUARTERLY fee ==
-                            fees.setText(properties.getProperty("Fees.QUARTERLY"));
+                            fees.setText(String.valueOf(sharedPreferences.getInt(FEES_QUARTERLY,0)));
                             break;
 
                         // == If Selected item is HALF YEARLY ==
                         case 2:
                             // == Setting the HALF YEARLY fee ==
-                            fees.setText(properties.getProperty("Fees.HALF_YEARLY"));
+                            fees.setText(String.valueOf(sharedPreferences.getInt(FEES_HALF_YEARLY,0)));
                             break;
 
                         // == If Selected item is ANNUAL ==
                         case 3:
                             // == Setting the ANNUAL fee ==
-                            fees.setText(properties.getProperty("Fees.ANNUAL"));
+                            fees.setText(String.valueOf(sharedPreferences.getInt(FEES_ANNUAL,0)));
                             break;
                     }
                 }
@@ -290,10 +305,10 @@ public class UserDetails extends AppCompatActivity {
                 }
             });
 
-        } catch (Exception e) {
-            // == Showing the error message ==
-            Toast.makeText(this, "Can't Load the Fees please try editing the fees ..", Toast.LENGTH_SHORT).show();
-        }
+//        } catch (Exception e) {
+//            // == Showing the error message ==
+//            Toast.makeText(this, "Can't Load the Fees please try editing the fees ..", Toast.LENGTH_SHORT).show();
+//        }
     }
 
 
@@ -367,7 +382,7 @@ public class UserDetails extends AppCompatActivity {
 
                             if (remainingAmount > 0) {
                                 // == Generating the Message ==
-                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, we request you to pay the due amount Rs %.2f as soon as possible. Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, we request you to pay the due amount Rs %.2f as soon as possible. Your account is going to expire on %s.\nThank you. \n\nRegards Fifth Gear Fitness",
                                         user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), remainingAmount, user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                                 // == Dividing the message ==
@@ -378,7 +393,7 @@ public class UserDetails extends AppCompatActivity {
 
                             } else {
                                 // == Generating the Message ==
-                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, Your account is going to expire on %s.\nThankyou. \n\nRegardes Fifth Gear Fitness",
+                                String message = String.format("Hi %s %s, Your payment of Rs %.2f was successful on %s, Your account is going to expire on %s.\nThank you. \n\nRegards Fifth Gear Fitness",
                                         user.getFirstName(), user.getLastName(), newAmount, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), user.getDueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
                                 // == Dividing the message ==
@@ -447,8 +462,10 @@ public class UserDetails extends AppCompatActivity {
         ((TextView) findViewById(R.id.occupation)).setText(String.format("%s", user.getOccupation()));
         ((TextView) findViewById(R.id.joining_date)).setText(String.format("%s", user.getJoiningDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         ((TextView) findViewById(R.id.status)).setText(String.format("%s", user.getStatus()));
-        ((ImageView) findViewById(R.id.profile_photo)).setImageURI(Uri.parse(user.getImagePath()));
-        ((ImageView) findViewById(R.id.user_enlarged_image)).setImageURI(Uri.parse(user.getImagePath()));
+//        ((ImageView) findViewById(R.id.profile_photo)).setImageURI(Uri.parse(user.getImagePath()));
+//        ((ImageView) findViewById(R.id.user_enlarged_image)).setImageURI(Uri.parse(user.getImagePath()));
+        ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(user.getImage());
+        ((ImageView) findViewById(R.id.user_enlarged_image)).setImageBitmap(user.getImage());
     }
 
     // == Adding functionality for the back or up button of tool bar ==
