@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import com.krraju.fifthgear.R;
 import com.krraju.fifthgear.addnewuser.AddNewUser;
 import com.krraju.fifthgear.dueamount.DueAmountActivity;
 import com.krraju.fifthgear.editfees.EditFees;
+import com.krraju.fifthgear.expenditure.Expenditure;
 import com.krraju.fifthgear.statistics.StatisticActivity;
 import com.krraju.fifthgear.storage.database.Database;
 import com.krraju.fifthgear.storage.entity.transation.Transaction;
@@ -73,6 +75,9 @@ public class HomeScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
+
+        // == Preventing the Screen from taking screenshots ==
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         // == fields ==
         Toolbar toolbar;
@@ -142,6 +147,12 @@ public class HomeScreen extends AppCompatActivity {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
 
+                // == Checking for Expenditure item menu ==
+                case R.id.expenditure:
+                    startActivity(new Intent(HomeScreen.this, Expenditure.class));
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    break;
+
                 // == checking for backup or restore item ==
                 case R.id.backup_or_restore:
                     drawerLayout.closeDrawer(GravityCompat.START);
@@ -158,10 +169,11 @@ public class HomeScreen extends AppCompatActivity {
                                     progressDialog.setMessage("Please Wait ..");
                                     progressDialog.show();
                                     Database.backUp(this);
-                                    Toast.makeText(this, "Backup clicked", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "Back up was successful..", Toast.LENGTH_SHORT).show();
                                     progressDialog.dismiss();
                                     dialog.dismiss();
                                     startActivity(getIntent());
+                                    finish();
                                 } else {
                                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, READ_WRITE_PERMISSION_REQUEST_CODE);
                                 }
@@ -180,6 +192,7 @@ public class HomeScreen extends AppCompatActivity {
                                     progressDialog.dismiss();
                                     dialog.dismiss();
                                     startActivity(getIntent());
+                                    finish();
                                 } else {
                                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, READ_WRITE_PERMISSION_REQUEST_CODE);
                                 }

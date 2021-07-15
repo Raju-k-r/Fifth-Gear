@@ -66,12 +66,14 @@ public class ExpiringSoonAdaptor extends RecyclerView.Adapter<ExpiringSoonAdapto
             // == finding the view by id ==
             TextView isExpiringSoonEmpty = ((Activity) context).findViewById(R.id.is_expiring_soon_empty);
 
-            // == checking the List and setting the visibility ==
-            if (this.userList.isEmpty()) {
-                isExpiringSoonEmpty.setVisibility(View.VISIBLE);
-            } else {
-                isExpiringSoonEmpty.setVisibility(View.GONE);
-            }
+            ((Activity) context).runOnUiThread(()->{
+                // == checking the List and setting the visibility ==
+                if (this.userList.isEmpty()) {
+                    isExpiringSoonEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    isExpiringSoonEmpty.setVisibility(View.GONE);
+                }
+            });
             // == notifying data change ==
             ((Activity) context).runOnUiThread(this::notifyDataSetChanged);
         }).start();

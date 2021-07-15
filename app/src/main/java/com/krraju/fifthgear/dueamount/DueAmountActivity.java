@@ -1,6 +1,7 @@
 package com.krraju.fifthgear.dueamount;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,6 +16,9 @@ public class DueAmountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_due_amount);
+
+        // == Preventing the Screen from taking screenshots ==
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         // == Local Variables ==
         Toolbar toolbar = findViewById(R.id.tool_bar);

@@ -14,8 +14,10 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteStatement;
 
+import com.krraju.fifthgear.storage.dao.ExpenditureDao;
 import com.krraju.fifthgear.storage.dao.TransactionDao;
 import com.krraju.fifthgear.storage.dao.UserDao;
+import com.krraju.fifthgear.storage.entity.expenditure.Expenditure;
 import com.krraju.fifthgear.storage.entity.transation.Transaction;
 import com.krraju.fifthgear.storage.entity.user.User;
 import com.krraju.fifthgear.storage.entity.user.converters.ImageConverter;
@@ -31,7 +33,7 @@ import java.io.OutputStream;
 import java.time.LocalDate;
 
 
-@androidx.room.Database(entities = {User.class, Transaction.class}, version = 2)
+@androidx.room.Database(entities = {User.class, Transaction.class, Expenditure.class}, version = 3)
 public abstract class Database extends RoomDatabase {
 
     // == Constants ==
@@ -48,12 +50,15 @@ public abstract class Database extends RoomDatabase {
 
     public abstract TransactionDao transactionDao();
 
+    public abstract ExpenditureDao expenditureDao();
+
     // == Method to Create the singleton instance of the class ==
     public static Database getInstance(Context context) {
         if (database == null) {
             // == Creating the Database ==
             database = Room.databaseBuilder(context, Database.class, DATABASE_NAME)
                     .addMigrations(migration_1_2)
+                    .addMigrations(migration_2_3)
                     .build();
         }
         return database;
@@ -147,7 +152,7 @@ public abstract class Database extends RoomDatabase {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(context, "Something Went wrong please try after sometime..", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -183,7 +188,7 @@ public abstract class Database extends RoomDatabase {
     }
 
     // == Creating new Migration From Version 1 to Version 2 ==
-    private static Migration migration_1_2 = new Migration(1,2) {
+    private static final Migration migration_1_2 = new Migration(1,2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("DROP TABLE IF EXISTS User_new");
@@ -221,6 +226,14 @@ public abstract class Database extends RoomDatabase {
             }
             database.execSQL("DROP TABLE User");
             database.execSQL("ALTER TABLE User_new RENAME TO User");
+        }
+    };
+
+    // == Creating new Migration From Version 2 to Version 3 ==
+    private static final Migration migration_2_3 = new Migration(2,3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE 'expenditure' ('serialNumber' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'date' TEXT, 'detailedDescription' TEXT, 'shortDescription' TEXT, 'amount' REAL NOT NULL)");
         }
     };
 }

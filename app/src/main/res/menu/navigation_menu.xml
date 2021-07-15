@@ -23,6 +23,11 @@
         android:icon="@drawable/due_amount_icon"/>
 
     <item
+        android:id="@+id/expenditure"
+        android:title="@string/expenditure"
+        android:icon="@drawable/expenditure_icon"/>
+
+    <item
         android:id="@+id/edit_fees"
         android:title="@string/edit_fees"
         android:icon="@drawable/fees_logo"/>

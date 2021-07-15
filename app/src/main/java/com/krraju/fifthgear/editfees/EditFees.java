@@ -2,6 +2,7 @@ package com.krraju.fifthgear.editfees;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -34,6 +35,9 @@ public class EditFees extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_fees);
+
+        // == Preventing the Screen from taking screenshots ==
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         // == local Fields ==
         Toolbar toolbar = findViewById(R.id.tool_bar);

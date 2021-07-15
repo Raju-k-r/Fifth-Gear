@@ -67,6 +67,13 @@
     <string name="in_active">In Active</string>
     <string name="this_week">Last 7 Days</string>
     <string name="backup_or_restore">Backup or Restore</string>
+    <string name="grand_total">GRAND TOTAL</string>
+    <string name="add_new_expenditure">Add New Expenditure</string>
+    <string name="short_description">Short Description</string>
+    <string name="detailed_description">Detailed Description</string>
+    <string name="add">ADD</string>
+    <string name="close">Close</string>
+    <string name="expenditure">Expenditure</string>
 
     <string-array name="plans">
         <item>MONTHLY</item>

@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.krraju.fifthgear">
-
     <!-- User Permissions -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -21,46 +20,33 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-
-        <!-- Edit User Activity-->
+        <activity android:name=".expenditure.Expenditure"
+            android:screenOrientation="portrait"/>
+       <!-- Edit User Activity -->
         <activity
             android:name=".edituser.EditUserDetailsActivity"
-            android:screenOrientation="portrait" />
-
-        <!-- Due Amount Activity-->
+            android:screenOrientation="portrait" /> <!-- Due Amount Activity -->
         <activity
             android:name=".dueamount.DueAmountActivity"
-            android:screenOrientation="portrait" />
-
-        <!-- Statistic Activity-->
+            android:screenOrientation="portrait" /> <!-- Statistic Activity -->
         <activity
             android:name=".statistics.StatisticActivity"
-            android:screenOrientation="portrait" />
-
-        <!-- Edit Fees Activity -->
+            android:screenOrientation="portrait" /> <!-- Edit Fees Activity -->
         <activity
             android:name=".editfees.EditFees"
-            android:screenOrientation="portrait" />
-
-        <!-- User Details Activity -->
+            android:screenOrientation="portrait" /> <!-- User Details Activity -->
         <activity
             android:name=".userdetails.UserDetails"
-            android:screenOrientation="portrait" />
-
-        <!-- View User Activity -->
+            android:screenOrientation="portrait" /> <!-- View User Activity -->
         <activity
             android:name=".viewuser.ViewUser"
-            android:screenOrientation="portrait" />
-
-        <!-- Home Screen -->
+            android:screenOrientation="portrait" /> <!-- Home Screen -->
         <activity
             android:name=".homescreen.HomeScreen"
-            android:screenOrientation="portrait" />
-
-        <!-- Add New User Screen -->
+            android:screenOrientation="portrait" /> <!-- Add New User Screen -->
         <activity
             android:name=".addnewuser.AddNewUser"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" /> <!-- Expenditure Screen -->
 
         <!-- Flash Screen -->
         <activity
@@ -68,6 +54,7 @@
             android:theme="@style/FlashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -70,6 +71,10 @@ public class AddNewUser extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_user);
+
+        // == Preventing the Screen from taking screenshots ==
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
 
         // == local fields ==
         Button registerButton;
@@ -377,7 +382,7 @@ public class AddNewUser extends AppCompatActivity {
             database.userDao().addNewUser(newUser);
 
             // == Showing the dialog of successfully added the user ==
-            runOnUiThread(() -> new AlertDialog.Builder(this)
+            runOnUiThread(() -> new AlertDialog.Builder(this,R.style.AlertDialog)
                     .setTitle("Success")
                     .setMessage("User Added Successfully ..")
                     .setPositiveButton("OK", ((dialog, which) -> {
